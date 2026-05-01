@@ -1,0 +1,12 @@
+# .NET
+bin/
+obj/
+*.user
+
+# EF Core
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+*.log
