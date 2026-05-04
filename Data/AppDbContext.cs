@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MeteoForecast.Data;
 
-internal class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<City> Cities { get; set; }
     public DbSet<HourlyWeather> HourlyWeathers { get; set; }
@@ -13,7 +13,6 @@ internal class AppDbContext : DbContext
     public DbSet<WeatherAlert> WeatherAlerts { get; set; }
     public DbSet<WeatherCache> WeatherCaches { get; set; }
 
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
