@@ -19,14 +19,16 @@ public static class ServiceCollectionExtension
         return services;
     }
 
-    public static IServiceCollection AddAppServices(this IServiceCollection services)
+    /* public static IServiceCollection AddAppServices(this IServiceCollection services)
     {
         services.AddScoped<IWeatherCacheService, WeatherCacheService>();
         services.AddScoped<IAlertService, AlertService>();
         services.AddScoped<ISettingsService, SettingsService>();
+        services.AddScoped <IWeatherApiService, OpenMeteoService()>;
+        services.AddScoped <ILocationService, NominatimService()>;
 
         return services;
-    }
+    } */
 
     /*     public static IServiceCollection AddViewModels(this IServiceCollection services)
         {
