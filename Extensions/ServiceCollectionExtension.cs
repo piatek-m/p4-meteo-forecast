@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MeteoForecast.Extensions;
 
-public static class ServiceCollectionExtensions
+public static class ServiceCollectionExtension
 {
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddViewModels(this IServiceCollection services)
+    // public static IServiceCollection AddViewModels(this IServiceCollection services)
     {
         services.AddTransient<MainViewModel>();
         services.AddTransient<AlertsViewModel>();
