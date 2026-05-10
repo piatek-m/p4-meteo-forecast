@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace MeteoForecast.OpenMeteo.DTOs;
+namespace MeteoForecast.DTOs.OpenMeteo;
 
 public class HourlyData
 {
