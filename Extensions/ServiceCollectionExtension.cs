@@ -28,15 +28,15 @@ public static class ServiceCollectionExtension
         return services;
     }
 
-    // public static IServiceCollection AddViewModels(this IServiceCollection services)
-    {
-        services.AddTransient<MainViewModel>();
-        services.AddTransient<AlertsViewModel>();
-        services.AddTransient<CityWeatherViewModel>();
-        services.AddTransient<SearchViewModel>();
-        services.AddTransient<SettingsViewModel>();
+    /*     public static IServiceCollection AddViewModels(this IServiceCollection services)
+        {
+            services.AddTransient<MainViewModel>();
+            services.AddTransient<AlertsViewModel>();
+            services.AddTransient<CityWeatherViewModel>();
+            services.AddTransient<SearchViewModel>();
+            services.AddTransient<SettingsViewModel>();
 
-        return services;
-    }
+            return services;
+        } */
 
 }
