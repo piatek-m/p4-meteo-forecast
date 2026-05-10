@@ -4,8 +4,6 @@ using MeteoForecast.Services;
 using MeteoForecast.Services.Interfaces;
 using MeteoForecast.ViewModels;
 using MeteoForecast.Views;
-
-
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MeteoForecast.Extensions;
@@ -21,11 +19,12 @@ public static class ServiceCollectionExtension
 
     /* public static IServiceCollection AddAppServices(this IServiceCollection services)
     {
+        services.AddHttpClient<IWeatherApiService, OpenMeteoService>();
+        services.AddHttpClient<ILocationService, NominatimService>();
+
         services.AddScoped<IWeatherCacheService, WeatherCacheService>();
         services.AddScoped<IAlertService, AlertService>();
         services.AddScoped<ISettingsService, SettingsService>();
-        services.AddScoped <IWeatherApiService, OpenMeteoService()>;
-        services.AddScoped <ILocationService, NominatimService()>;
 
         return services;
     } */
