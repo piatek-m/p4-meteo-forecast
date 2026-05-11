@@ -6,11 +6,8 @@ using MeteoForecast.DTOs.OpenMeteo;
 
 namespace MeteoForecast.Services;
 
-public class OpenMeteoService(HttpClient httpClient) : IWeatherApiService
+public class OpenMeteoService(HttpClient httpClient) : BaseHttpApiService(httpClient, "https://api.open-meteo.com/v1/forecast"), IWeatherApiService
 {
-    private readonly HttpClient _httpClient = httpClient;
-
-    private const string OpenMeteoUrl = "https://api.open-meteo.com/v1/forecast";
     private const string HourlyFields =
         "temperature_2m,apparent_temperature,precipitation,snowfall," +
         "surface_pressure,wind_speed_10m,wind_direction_10m," +
@@ -20,17 +17,15 @@ public class OpenMeteoService(HttpClient httpClient) : IWeatherApiService
     {
         var date = day.ToString("yyyy-MM-dd");
         var url =
-            $"{OpenMeteoUrl}?latitude={lat}&longitude={lon}" +
+            $"{ApiUrl}?latitude={lat}&longitude={lon}" +
             $"&hourly={HourlyFields}" +
             $"&start_date={date}&end_date={date}";
 
-        var response = await _httpClient.GetFromJsonAsync<OpenMeteoResponse>(url)
-            ?? throw new InvalidOperationException("OpenMeteo returned empty response.");
-
-        return MapToHourlyWeather(response);
+        var response = await GetAsync<OpenMeteoResponse>(url);
+        return MapResponseToWeather(response);
     }
 
-    private static List<HourlyWeather> MapToHourlyWeather(OpenMeteoResponse response)
+    private static List<HourlyWeather> MapResponseToWeather(OpenMeteoResponse response)
     {
         var hourly = response.Hourly
             ?? throw new InvalidOperationException("Response contains no time data");
