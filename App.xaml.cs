@@ -40,13 +40,8 @@ public partial class App : Application
                         .AddDatabase()
                         .AddRepositories()
                         .AddAppServices()
-                        .AddViewModels();
-
-                    services.AddSingleton<MainWindow>();
-                    // services.AddSingleton<AlertsView>();
-                    // services.AddSingleton<CityWeatherView>();
-                    // services.AddSingleton<SearchView>();
-                    // services.AddSingleton<SettingsView>();
+                        .AddViewModels()
+                        .AddViews();
 
                 })
                 .Build();
