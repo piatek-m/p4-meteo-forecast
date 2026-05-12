@@ -28,21 +28,16 @@ public partial class App : Application
 
             .ConfigureAppConfiguration((context, config) =>
                 {
-                    config.AddJsonFile("appsettings.json,",
+                    config.AddJsonFile("appsettings.json",
                     optional: false,
                     reloadOnChange: true);
                 })
 
                 .ConfigureServices((context, services) =>
                 {
-                    services.Configure<AppSettings>(
-                        context.Configuration.GetSection("AppSettings")
-                    );
-
-                    services.AddDbContext<AppDbContext>(options =>
-                        options.UseSqlite("Data Source=meteoforecast.db"));
-
                     services
+                        .AddConfiguration(context.Configuration)
+                        .AddDatabase()
                         .AddRepositories()
                         .AddAppServices()
                         .AddViewModels();
