@@ -4,7 +4,7 @@ using MeteoForecast.Models;
 using System.Net.Http.Json;
 using MeteoForecast.DTOs.OpenMeteo;
 
-namespace MeteoForecast.Services;
+namespace MeteoForecast.Services.APIs;
 
 public class OpenMeteoService(HttpClient httpClient) : BaseHttpApiService(httpClient, "https://api.open-meteo.com/v1/forecast"), IWeatherApiService
 {

@@ -1,7 +1,7 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 
-namespace MeteoForecast.Services;
+namespace MeteoForecast.Services.APIs;
 
 public abstract class BaseHttpApiService(HttpClient httpClient, string apiUrl)
 {
