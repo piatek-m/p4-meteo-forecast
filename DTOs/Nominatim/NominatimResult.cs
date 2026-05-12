@@ -10,6 +10,6 @@ public class NominatimResult
     [JsonPropertyName("lon")]
     public string Lon { get; set; } = "";
 
-    [JsonPropertyName("addresss")]
-    public NominatimAddress? Addresss { get; set; }
+    [JsonPropertyName("address")]
+    public NominatimAddress? Address { get; set; }
 }
