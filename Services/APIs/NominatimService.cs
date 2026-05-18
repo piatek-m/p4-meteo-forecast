@@ -12,6 +12,9 @@ namespace MeteoForecast.Services.APIs;
 
 public class NominatimService : BaseHttpApiService, ILocationService
 {
+    private DateTime lastRequestTime = DateTime.MinValue;
+    private static readonly TimeSpan MinInterval = TimeSpan.FromSeconds(1);
+
     public NominatimService(IOptions<NominatimSettings> nominatimSettings) : base(CreateHttpClient(nominatimSettings.Value.UserAgent), "https://nominatim.openstreetmap.org/search") { }
 
     private static HttpClient CreateHttpClient(string userAgent)
@@ -23,6 +26,8 @@ public class NominatimService : BaseHttpApiService, ILocationService
 
     public async Task<List<City>> SearchCitiesAsync(string query)
     {
+        await EnforceRateLimitAsync();
+
         var url =
             $"{ApiUrl}?q={Uri.EscapeDataString(query)}" +
             $"&format=json&addressdetails=1&limit=10";
@@ -54,4 +59,11 @@ public class NominatimService : BaseHttpApiService, ILocationService
         AddedAt = DateTime.Now
     };
 
+    private async Task EnforceRateLimitAsync()
+    {
+        var elapsed = DateTime.Now - lastRequestTime;
+        if (elapsed < MinInterval)
+            await Task.Delay(MinInterval - elapsed);
+        lastRequestTime = DateTime.Now;
+    }
 }
