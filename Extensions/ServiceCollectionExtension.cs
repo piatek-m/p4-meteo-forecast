@@ -48,7 +48,7 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddAppServices(this IServiceCollection services)
     {
         services.AddHttpClient<IWeatherApiService, OpenMeteoService>();
-        services.AddHttpClient<ILocationService, NominatimService>();
+        services.AddSingleton<ILocationService, NominatimService>();
 
         services.AddScoped<IWeatherCacheService, WeatherCacheService>();
         services.AddScoped<IAlertService, AlertService>();
