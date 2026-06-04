@@ -2,12 +2,12 @@ using System.Windows.Input;
 
 namespace MeteoForecast.ViewModels.Generics;
 
-public class RelayComand : ICommand
+public class RelayCommand : ICommand
 {
     private readonly Action _execute;
     private readonly Func<bool> _canExecute;
 
-    public RelayComand(Action execute, Func<bool> canExecute)
+    public RelayCommand(Action execute, Func<bool> canExecute)
     {
         _execute = execute;
         _canExecute = canExecute;
