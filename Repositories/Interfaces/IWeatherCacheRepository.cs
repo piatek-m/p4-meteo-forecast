@@ -6,4 +6,5 @@ public interface IWeatherCacheRepository : IRepository<WeatherCache>
 {
     Task<WeatherCache?> GetByCityAndDateAsync(int cityId, DateTime date);
     Task DeleteExpiredAsync(int cacheIntervalMinutes);
+    Task DeleteByCityAsync(int cityId);
 }
