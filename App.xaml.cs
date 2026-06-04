@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MeteoForecast.Extensions;
+using MeteoForecast.Repositories.Interfaces;
+using MeteoForecast.Services.Interfaces;
 
 namespace MeteoForecast;
 
@@ -46,15 +48,21 @@ public partial class App : Application
                 })
                 .Build();
     }
+
     protected override async void OnStartup(StartupEventArgs e)
     {
         await host.StartAsync();
+
+        // Clear old weather cache oon startup
+        var cacheService = host.Services.GetRequiredService<IWeatherCacheService>();
+        await cacheService.CleanupExpiredAsync();
 
         var mainWindow = host.Services.GetRequiredService<MainWindow>();
         mainWindow.Show();
 
         base.OnStartup(e);
     }
+
     protected override async void OnExit(ExitEventArgs e)
     {
         await host.StopAsync();
