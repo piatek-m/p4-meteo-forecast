@@ -53,11 +53,13 @@ public class CityWeatherViewModel : BaseViewModel
 
     private async Task NextDayAsync()
     {
+        if (SelectedDay >= DateTime.Today.AddDays(2)) return;
         SelectedDay = SelectedDay.AddDays(1);
         await LoadForecastAsync();
     }
     private async Task PreviousDayAsync()
     {
+        if (SelectedDay <= DateTime.Today.AddDays(-2)) return;
         SelectedDay = SelectedDay.AddDays(-1);
         await LoadForecastAsync();
     }
