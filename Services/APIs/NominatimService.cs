@@ -12,6 +12,7 @@ namespace MeteoForecast.Services.APIs;
 
 public class NominatimService : BaseHttpApiService, ILocationService
 {
+    private readonly Dictionary<string, List<City>> _cache = [];
     private DateTime lastRequestTime = DateTime.MinValue;
     private static readonly TimeSpan MinInterval = TimeSpan.FromSeconds(1);
 
@@ -26,6 +27,10 @@ public class NominatimService : BaseHttpApiService, ILocationService
 
     public async Task<List<City>> SearchCitiesAsync(string query)
     {
+        var key = query.Trim().ToLower();
+        if (_cache.TryGetValue(key, out var cached))
+            return cached;
+
         await EnforceRateLimitAsync();
 
         var url =
@@ -33,8 +38,10 @@ public class NominatimService : BaseHttpApiService, ILocationService
             $"&format=json&addressdetails=1&limit=10";
 
         var results = await GetAsync<List<NominatimResult>>(url) ?? [];
+        var cities = results.Select(MapResponseToCity).ToList();
 
-        return [.. results.Select(MapResponseToCity)];
+        _cache[key] = cities;
+        return cities;
     }
 
     public async Task<(double Lat, double Lon)> GetCurrentLocationAsync()
