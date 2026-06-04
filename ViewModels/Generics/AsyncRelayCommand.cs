@@ -5,10 +5,10 @@ namespace MeteoForecast.ViewModels.Generics;
 public class AsyncRelayCommand : ICommand
 {
     private readonly Func<Task> _execute;
-    private readonly Func<bool> _canExecute;
+    private readonly Func<bool>? _canExecute;
     private bool _isExecuting;
 
-    public AsyncRelayCommand(Func<Task> execute, Func<bool> canExecute)
+    public AsyncRelayCommand(Func<Task> execute, Func<bool>? canExecute = null)
     {
         _execute = execute;
         _canExecute = canExecute;
