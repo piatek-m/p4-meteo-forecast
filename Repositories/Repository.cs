@@ -29,4 +29,6 @@ public abstract class Repository<T> : IRepository<T> where T : class
         if (entity is not null)
             _dbSet.Remove(entity);
     }
+    public async Task SaveChangesAsync()
+        => await _context.SaveChangesAsync();
 }
