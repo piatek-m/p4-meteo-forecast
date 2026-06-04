@@ -24,8 +24,8 @@ public class CityWeatherViewModel : BaseViewModel
     }
     public ObservableCollection<HourlyWeather> Forecast { get; } = [];
 
-    public ICommand NextDayCommand { get; }
-    public ICommand PreviousDayCommand { get; }
+    public AsyncRelayCommand NextDayCommand { get; }
+    public AsyncRelayCommand PreviousDayCommand { get; }
 
     public CityWeatherViewModel(IWeatherCacheService weatherCacheService)
     {
@@ -64,4 +64,6 @@ public class CityWeatherViewModel : BaseViewModel
         await LoadForecastAsync();
     }
 
+    public override void OnNavigatedTo()
+        => _ = LoadForecastAsync();
 }
