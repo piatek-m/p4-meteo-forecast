@@ -4,6 +4,7 @@ using MeteoForecast.Models.Settings;
 using MeteoForecast.Repositories;
 using MeteoForecast.Repositories.Interfaces;
 using MeteoForecast.Services;
+using MeteoForecast.Services.APIs;
 using MeteoForecast.Services.Interfaces;
 using MeteoForecast.ViewModels;
 using MeteoForecast.Views;
@@ -43,8 +44,6 @@ public static class ServiceCollectionExtension
         return services;
     }
 
-    /* !UNCOMMENT! when I implement the rest of the services
-
     public static IServiceCollection AddAppServices(this IServiceCollection services)
     {
         services.AddHttpClient<IWeatherApiService, OpenMeteoService>();
@@ -55,25 +54,27 @@ public static class ServiceCollectionExtension
         services.AddScoped<ISettingsService, SettingsService>();
 
         return services;
-    } */
+    }
 
-    /*     public static IServiceCollection AddViewModels(this IServiceCollection services)
-        {
-            services.AddTransient<MainViewModel>();
-            services.AddTransient<AlertsViewModel>();
-            services.AddTransient<CityWeatherViewModel>();
-            services.AddTransient<SearchViewModel>();
-            services.AddTransient<SettingsViewModel>();
+    public static IServiceCollection AddViewModels(this IServiceCollection services)
+    {
+        services.AddTransient<MainViewModel>();
+        services.AddTransient<AlertsViewModel>();
+        services.AddTransient<CityWeatherViewModel>();
+        services.AddTransient<SearchViewModel>();
+        services.AddTransient<SettingsViewModel>();
 
-            return services;
-        } */
+        return services;
+    }
 
-    // public static IServiceCollection AddViews(this IServiceCollection services)
-    // {
-    //     services.AddSingleton<MainWindow>();
-    //     services.AddSingleton<AlertsView>();
-    //     services.AddSingleton<CityWeatherView>();
-    //     services.AddSingleton<SearchView>();
-    //     services.AddSingleton<SettingsView>();
-    // }
+    public static IServiceCollection AddViews(this IServiceCollection services)
+    {
+        services.AddSingleton<MainWindow>();
+        services.AddSingleton<AlertsView>();
+        services.AddSingleton<CityWeatherView>();
+        services.AddSingleton<SearchView>();
+        services.AddSingleton<SettingsView>();
+
+        return services;
+    }
 }
