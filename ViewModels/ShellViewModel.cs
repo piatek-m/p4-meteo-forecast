@@ -10,6 +10,7 @@ public class ShellViewModel : BaseViewModel
     private readonly SettingsViewModel _settingsViewModel;
     private readonly AlertsViewModel _alertsViewModel;
 
+    public AlertsViewModel AlertsViewModel => _alertsViewModel;
     private BaseViewModel _currentViewModel;
     public BaseViewModel CurrentViewModel
     {
