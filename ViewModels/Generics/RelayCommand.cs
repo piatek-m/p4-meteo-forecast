@@ -1,6 +1,6 @@
 using System.Windows.Input;
 
-namespace MeteoForecast.ViewModels;
+namespace MeteoForecast.ViewModels.Generics;
 
 public class RelayComand : ICommand
 {

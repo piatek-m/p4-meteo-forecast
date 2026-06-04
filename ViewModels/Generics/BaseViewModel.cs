@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace MeteoForecast.ViewModels;
+namespace MeteoForecast.ViewModels.Generics;
 
 public abstract class BaseViewModel : INotifyPropertyChanged
 {
