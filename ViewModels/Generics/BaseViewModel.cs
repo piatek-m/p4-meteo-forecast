@@ -19,4 +19,6 @@ public abstract class BaseViewModel : INotifyPropertyChanged
         OnPropertyChanged(propertyName);
         return true;
     }
+
+    public virtual void OnNavigatedTo() { }
 }
