@@ -1,7 +1,7 @@
 using System.Windows;
 using MeteoForecast.Models;
 
-namespace MeteoForecast.Services;
+namespace MeteoForecast.Converters;
 
 public static class UnitConverter
 {

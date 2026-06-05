@@ -1,6 +1,6 @@
 using MeteoForecast.Models;
 
-namespace MeteoForecast.Services;
+namespace MeteoForecast.Converters;
 
 public static class WindConverter
 {
