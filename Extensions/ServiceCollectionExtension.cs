@@ -58,23 +58,24 @@ public static class ServiceCollectionExtension
 
     public static IServiceCollection AddViewModels(this IServiceCollection services)
     {
-        services.AddTransient<MainViewModel>();
-        services.AddTransient<AlertsViewModel>();
-        services.AddTransient<CityWeatherViewModel>();
-        services.AddTransient<SearchViewModel>();
-        services.AddTransient<SettingsViewModel>();
+        services.AddSingleton<ShellViewModel>();
+        services.AddSingleton<MainViewModel>();
+        services.AddSingleton<AlertsViewModel>();
+        services.AddSingleton<CityWeatherViewModel>();
+        services.AddSingleton<SearchViewModel>();
+        services.AddSingleton<SettingsViewModel>();
 
         return services;
     }
 
-    public static IServiceCollection AddViews(this IServiceCollection services)
-    {
-        services.AddSingleton<MainWindow>();
-        services.AddSingleton<AlertsView>();
-        services.AddSingleton<CityWeatherView>();
-        services.AddSingleton<SearchView>();
-        services.AddSingleton<SettingsView>();
+    // public static IServiceCollection AddViews(this IServiceCollection services)
+    // {
+    //     services.AddSingleton<MainWindow>();
+    //     services.AddSingleton<AlertsView>();
+    //     services.AddSingleton<CityWeatherView>();
+    //     services.AddSingleton<SearchView>();
+    //     services.AddSingleton<SettingsView>();
 
-        return services;
-    }
+    //     return services;
+    // }
 }
