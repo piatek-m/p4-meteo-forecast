@@ -3,10 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:MeteoForecast.ViewModels"
         xmlns:views="clr-namespace:MeteoForecast.Views"
+        xlmns:converters="clr-namespace:MeteoForecast.Converters"
         Title="MeteoForecast">
 
         <Window.Resources>
                 <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+                <converters:AlertColorConverter x:Key="AlertColorConverter"/>
+                <converters:SettingsActiveBackgroundConverter x:Key="SettingsActiveBackgroundConverter"/>
 
                 <DataTemplate DataType="{x:Type vm:MainViewModel}">
                         <views:MainView/>
