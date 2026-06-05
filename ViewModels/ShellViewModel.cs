@@ -1,22 +1,29 @@
 using System.Security.Cryptography.X509Certificates;
+using MeteoForecast.Services.Interfaces;
 using MeteoForecast.ViewModels.Generics;
+using MeteoForecast.Views;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MeteoForecast.ViewModels;
 
-public class ShellViewModel : BaseViewModel
+public class ShellViewModel : BaseViewModel, INavigationService
 {
-    private readonly MainViewModel _mainViewModel;
-    private readonly SearchViewModel _searchViewModel;
-    private readonly SettingsViewModel _settingsViewModel;
-    private readonly AlertsViewModel _alertsViewModel;
+    private readonly IServiceProvider _services;
 
-    public AlertsViewModel AlertsViewModel => _alertsViewModel;
-    private BaseViewModel _currentViewModel;
+    public AlertsViewModel AlertsViewModel => _services.GetRequiredService<AlertsViewModel>();
+
+    private BaseViewModel _currentViewModel = null!;
     public BaseViewModel CurrentViewModel
     {
         get => _currentViewModel;
-        set => SetProperty(ref _currentViewModel, value);
+        private set
+        {
+            SetProperty(ref _currentViewModel, value);
+            OnPropertyChanged(nameof(IsSettingsActive));
+        }
     }
+
     private BaseViewModel? _previousViewModel;
 
     private bool _isAlertsOpen;
@@ -25,6 +32,7 @@ public class ShellViewModel : BaseViewModel
         get => _isAlertsOpen;
         private set => SetProperty(ref _isAlertsOpen, value);
     }
+
     public bool IsSettingsActive => CurrentViewModel is SettingsViewModel;
 
     public RelayCommand GoToSearchCommand { get; }
@@ -33,59 +41,71 @@ public class ShellViewModel : BaseViewModel
     public RelayCommand ToggleAlertsCommand { get; }
     public RelayCommand CloseAlertsCommand { get; }
 
-    public ShellViewModel(
-        MainViewModel mainViewModel,
-        SearchViewModel searchViewModel,
-        SettingsViewModel settingsViewModel,
-        AlertsViewModel alertsViewModel
-        )
+    public ShellViewModel(IServiceProvider services)
     {
-        _mainViewModel = mainViewModel;
-        _searchViewModel = searchViewModel;
-        _settingsViewModel = settingsViewModel;
-        _alertsViewModel = alertsViewModel;
+        _services = services;
+        _currentViewModel = _services.GetRequiredService<MainViewModel>();
 
-        _currentViewModel = _mainViewModel;
-
-        GoToSearchCommand = new RelayCommand(_ => NavigateTo(_searchViewModel));
+        GoToSearchCommand = new RelayCommand(_ => NavigateTo<SearchViewModel>());
         GoToSettingsCommand = new RelayCommand(_ => ToggleSettings());
         GoBackCommand = new RelayCommand(_ => GoBack(), _ => _previousViewModel is not null);
-        ToggleAlertsCommand = new RelayCommand(_ => ToggleAlerts());
+        ToggleAlertsCommand = new RelayCommand(_ => IsAlertsOpen = !IsAlertsOpen);
         CloseAlertsCommand = new RelayCommand(_ => IsAlertsOpen = false);
     }
-    public void NavigateTo(BaseViewModel destination)
+
+    public void NavigateTo<TViewModel>() where TViewModel : BaseViewModel
     {
-        if (CurrentViewModel == destination) return;
+        var vm = _services.GetRequiredService<TViewModel>();
+        if (CurrentViewModel == vm) return;
 
         _previousViewModel = CurrentViewModel;
-        CurrentViewModel = destination;
+        CurrentViewModel = vm;
         IsAlertsOpen = false;
 
-        OnPropertyChanged(nameof(IsSettingsActive));
+        vm.OnNavigatedTo();
+        GoBackCommand.RaiseCanExecuteChanged();
+    }
 
-        destination.OnNavigatedTo();
-    }
-    private void ToggleSettings()
+    public void NavigateTo<TViewModel>(Action<TViewModel> configure) where TViewModel : BaseViewModel
     {
-        if (CurrentViewModel is SettingsViewModel)
-            GoBack();
-        else
-            NavigateTo(_settingsViewModel);
+        var vm = _services.GetRequiredService<TViewModel>();
+        configure(vm);
 
-        OnPropertyChanged(nameof(IsSettingsActive));
+        if (CurrentViewModel == vm)
+        {
+            vm.OnNavigatedTo();
+            return;
+        }
+
+        _previousViewModel = CurrentViewModel;
+        CurrentViewModel = vm;
+        IsAlertsOpen = false;
+
+        vm.OnNavigatedTo();
+        GoBackCommand.RaiseCanExecuteChanged();
     }
-    private void ToggleAlerts()
-    {
-        IsAlertsOpen = !IsAlertsOpen;
-    }
-    private void GoBack()
+
+    public void GoBack()
     {
         if (_previousViewModel is null) return;
 
         CurrentViewModel = _previousViewModel;
         _previousViewModel = null;
 
-        OnPropertyChanged(nameof(IsSettingsActive));
         GoBackCommand.RaiseCanExecuteChanged();
+    }
+
+    private void ToggleSettings()
+    {
+        if (CurrentViewModel is SettingsViewModel)
+        {
+            var settingsVm = _services.GetRequiredService<SettingsViewModel>();
+            _ = settingsVm.SaveAsync();
+            GoBack();
+        }
+        else
+        {
+            NavigateTo<SettingsViewModel>();
+        }
     }
 }
