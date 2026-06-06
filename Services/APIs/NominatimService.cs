@@ -35,10 +35,13 @@ public class NominatimService : BaseHttpApiService, ILocationService
 
         var url =
             $"{ApiUrl}?q={Uri.EscapeDataString(query)}" +
-            $"&format=json&addressdetails=1&limit=10";
+            $"&format=json&addressdetails=1&limit=10" +
+            $"&namedetails=0&extratags=0" +
+            $"&featuretype=city,town,village";
 
         var results = await GetAsync<List<NominatimResult>>(url) ?? [];
-        var cities = results.Select(MapResponseToCity).ToList();
+        var filtered = results.Where(r => r.AddressType is "city" or "town" or "village" or "hamlet" or "suburb");
+        var cities = filtered.Select(MapResponseToCity).ToList();
 
         _cache[key] = cities;
         return cities;
@@ -59,8 +62,12 @@ public class NominatimService : BaseHttpApiService, ILocationService
 
     private static City MapResponseToCity(NominatimResult result) => new()
     {
-        Name = result.Address?.ResolveName() ?? "Unknown",
-        Country = result.Address?.Country ?? "Unknown",
+        Name = result.Address?.ResolveName() is { Length: > 0 } name && name != "Unkown"
+            ? name
+            : result.Name is { Length: > 0 } ? result.Name : "Unkown",
+        Country = result.Address?.ResolveSubtitle() is { Length: > 0 } subtitle
+            ? $"{subtitle}, {result.Address?.Country}"
+            : result.Address?.Country ?? "Unknown",
         Latitude = double.Parse(result.Lat, System.Globalization.CultureInfo.InvariantCulture),
         Longitude = double.Parse(result.Lon, System.Globalization.CultureInfo.InvariantCulture),
         AddedAt = DateTime.Now
