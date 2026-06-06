@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows.Input;
 using MeteoForecast.Models;
 using MeteoForecast.Services.Interfaces;
@@ -13,15 +14,35 @@ public class CityWeatherViewModel : BaseViewModel
     public City? SelectedCity
     {
         get => _selectedCity;
-        set => SetProperty(ref _selectedCity, value);
+        set
+        {
+            if (SetProperty(ref _selectedCity, value) && value is not null)
+            {
+                SelectedDay = DateTime.Today;
+                _ = LoadForecastAsync();
+            }
+        }
     }
 
     private DateTime _selectedDay = DateTime.Today;
     public DateTime SelectedDay
     {
         get => _selectedDay;
-        set => SetProperty(ref _selectedDay, value);
+        set
+        {
+            SetProperty(ref _selectedDay, value);
+            OnPropertyChanged(nameof(DayLabel));
+        }
     }
+    public string DayLabel => (SelectedDay.Date - DateTime.Today).Days switch
+    {
+        -2 => "przedwczoraj",
+        -1 => "wczoraj",
+        0 => "dziś",
+        1 => "jutro",
+        2 => "pojutrze",
+        _ => SelectedDay.ToString("ddd d MMM")
+    };
     public ObservableCollection<HourlyWeather> Forecast { get; } = [];
 
     public AsyncRelayCommand NextDayCommand { get; }
