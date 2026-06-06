@@ -34,7 +34,7 @@ public partial class App : Application
                 .ConfigureAppConfiguration((context, config) =>
                     {
                         config.AddJsonFile("appsettings.json",
-                        optional: true,
+                        optional: false,
                         reloadOnChange: true);
                     })
 
