@@ -1,3 +1,4 @@
+using System.IO;
 using MeteoForecast.Data;
 using MeteoForecast.Models;
 using MeteoForecast.Models.Settings;
@@ -28,18 +29,21 @@ public static class ServiceCollectionExtension
 
     public static IServiceCollection AddDatabase(this IServiceCollection services)
     {
+        var dbPath = Path.Combine(AppContext.BaseDirectory, "meteoforecast.db");
+        File.AppendAllText("db_path.log", dbPath + "\n");
+
         services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlite("Data Source=meteoforecast.db"));
+            options.UseSqlite($"Data Source={dbPath}"));
 
         return services;
     }
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped<ICityRepository, CityRepository>();
-        services.AddScoped<IWeatherCacheRepository, WeatherCacheRepository>();
-        services.AddScoped<IWeatherAlertRepository, WeatherAlertRepository>();
-        services.AddScoped<ISearchHistoryRepository, SearchHistoryRepository>();
+        services.AddTransient<ICityRepository, CityRepository>();
+        services.AddTransient<IWeatherCacheRepository, WeatherCacheRepository>();
+        services.AddTransient<IWeatherAlertRepository, WeatherAlertRepository>();
+        services.AddTransient<ISearchHistoryRepository, SearchHistoryRepository>();
 
         return services;
     }
@@ -49,9 +53,9 @@ public static class ServiceCollectionExtension
         services.AddHttpClient<IWeatherApiService, OpenMeteoService>();
         services.AddSingleton<ILocationService, NominatimService>();
 
-        services.AddScoped<IWeatherCacheService, WeatherCacheService>();
-        services.AddScoped<IAlertService, AlertService>();
-        services.AddScoped<ISettingsService, SettingsService>();
+        services.AddTransient<IWeatherCacheService, WeatherCacheService>();
+        // services.AddTransient<IAlertService, AlertService>();
+        services.AddTransient<ISettingsService, SettingsService>();
 
         return services;
     }
@@ -59,6 +63,8 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddViewModels(this IServiceCollection services)
     {
         services.AddSingleton<ShellViewModel>();
+        services.AddSingleton<INavigationService>(sp =>
+            (INavigationService)sp.GetRequiredService<ShellViewModel>());
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<AlertsViewModel>();
         services.AddSingleton<CityWeatherViewModel>();
@@ -68,14 +74,14 @@ public static class ServiceCollectionExtension
         return services;
     }
 
-    // public static IServiceCollection AddViews(this IServiceCollection services)
-    // {
-    //     services.AddSingleton<MainWindow>();
-    //     services.AddSingleton<AlertsView>();
-    //     services.AddSingleton<CityWeatherView>();
-    //     services.AddSingleton<SearchView>();
-    //     services.AddSingleton<SettingsView>();
+    /*  public static IServiceCollection AddViews(this IServiceCollection services)
+     {
+         services.AddSingleton<MainWindow>();
+         // services.AddSingleton<AlertsView>();
+         services.AddSingleton<CityWeatherView>();
+         services.AddSingleton<SearchView>();
+         services.AddSingleton<SettingsView>();
 
-    //     return services;
-    // }
+         return services;
+     } */
 }
