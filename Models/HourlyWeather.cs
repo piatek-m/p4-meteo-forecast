@@ -14,5 +14,5 @@ public class HourlyWeather
     public double WindSpeed { get; set; } // m/s
     public double WindDirection { get; set; } // deg. (0-360)
     public int Humidity { get; set; }
-    public required string WeatherCode { get; set; }
+    public int WeatherCode { get; set; }
 }
