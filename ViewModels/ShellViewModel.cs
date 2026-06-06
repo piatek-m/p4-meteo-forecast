@@ -12,6 +12,7 @@ public class ShellViewModel : BaseViewModel, INavigationService
     private readonly IServiceProvider _services;
 
     public AlertsViewModel AlertsViewModel => _services.GetRequiredService<AlertsViewModel>();
+    public SearchViewModel SearchViewModel => _services.GetRequiredService<SearchViewModel>();
 
     private BaseViewModel _currentViewModel = null!;
     public BaseViewModel CurrentViewModel
@@ -44,13 +45,18 @@ public class ShellViewModel : BaseViewModel, INavigationService
     public ShellViewModel(IServiceProvider services)
     {
         _services = services;
-        _currentViewModel = _services.GetRequiredService<MainViewModel>();
+        _currentViewModel = null!;
 
         GoToSearchCommand = new RelayCommand(_ => NavigateTo<SearchViewModel>());
         GoToSettingsCommand = new RelayCommand(_ => ToggleSettings());
         GoBackCommand = new RelayCommand(_ => GoBack(), _ => _previousViewModel is not null);
         ToggleAlertsCommand = new RelayCommand(_ => IsAlertsOpen = !IsAlertsOpen);
         CloseAlertsCommand = new RelayCommand(_ => IsAlertsOpen = false);
+    }
+
+    public void Initialize()
+    {
+        NavigateTo<MainViewModel>();
     }
 
     public void NavigateTo<TViewModel>() where TViewModel : BaseViewModel
@@ -92,6 +98,7 @@ public class ShellViewModel : BaseViewModel, INavigationService
         CurrentViewModel = _previousViewModel;
         _previousViewModel = null;
 
+        CurrentViewModel.OnNavigatedTo();
         GoBackCommand.RaiseCanExecuteChanged();
     }
 
