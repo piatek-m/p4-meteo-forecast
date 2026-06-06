@@ -37,6 +37,7 @@ public class NominatimService : BaseHttpApiService, ILocationService
             $"{ApiUrl}?q={Uri.EscapeDataString(query)}" +
             $"&format=json&addressdetails=1&limit=10" +
             $"&namedetails=0&extratags=0" +
+            $"&accept-language=pl" +
             $"&featuretype=city,town,village";
 
         var results = await GetAsync<List<NominatimResult>>(url) ?? [];
