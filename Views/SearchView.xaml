@@ -1,0 +1,128 @@
+<UserControl x:Class="MeteoForecast.Views.SearchView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:MeteoForecast.ViewModels"
+             xmlns:converters="clr-namespace:MeteoForecast.Converters">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:FavouriteIconConverter x:Key="FavouriteIconConverter"/>
+        <converters:WeatherIconConverter x:Key="WeatherIconConverter"/>
+    </UserControl.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Search bar -->
+        <Grid Grid.Row="0"
+              Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0"
+                     x:Name="SearchBox"
+                     Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                     Padding="10,6"
+                     FontSize="14"
+                     VerticalContentAlignment="Center">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Return"
+                                Command="{Binding SearchCommand}"/>
+                </TextBox.InputBindings>
+            </TextBox>
+
+            <Button Grid.Column="1"
+                    Content="✕"
+                    Margin="8,0,0,0"
+                    Padding="10,6"
+                    Command="{Binding DataContext.GoBackCommand,
+                        RelativeSource={RelativeSource AncestorType=Window}}"
+                    Background="Transparent"/>
+        </Grid>
+
+        <!-- Localization button -->
+        <Button Grid.Row="1"
+                HorizontalAlignment="Left"
+                Margin="0,0,0,12"
+                Padding="10,6"
+                Command="{Binding UseCurrentLocationCommand}"
+                Background="Transparent">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="🧭"
+                           Margin="0,0,6,0"/>
+                <TextBlock Text="Użyj mojej lokalizacji"/>
+            </StackPanel>
+        </Button>
+
+        <!-- Results section -->
+        <Grid Grid.Row="2">
+
+            <!-- No results -->
+            <TextBlock Text="Brak wyników"
+                       Foreground="Gray"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Visibility="{Binding ShowNoResults,
+                           Converter={StaticResource BoolToVis}}"/>
+
+            <!-- Result list -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding Results}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:FavouriteCityViewModel}">
+                            <Border BorderThickness="0,0,0,1"
+                                    BorderBrush="#11000000"
+                                    Padding="8,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Name+country -->
+                                    <StackPanel Grid.Column="0"
+                                                VerticalAlignment="Center"
+                                                Cursor="Hand">
+                                        <StackPanel.InputBindings>
+                                            <MouseBinding MouseAction="LeftClick"
+                                                          Command="{Binding DataContext.SelectCityCommand,
+                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                          CommandParameter="{Binding}"/>
+                                        </StackPanel.InputBindings>
+                                        <TextBlock Text="{Binding City.Name}"
+                                                   FontSize="14"
+                                                   FontWeight="Medium"/>
+                                        <TextBlock Text="{Binding City.Country}"
+                                                   FontSize="12"
+                                                   Foreground="Gray"/>
+                                    </StackPanel>
+
+                                    <!-- Fav symbol -->
+                                    <Button Grid.Column="2"
+                                            VerticalAlignment="Center"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            FontSize="18"
+                                            Cursor="Hand"
+                                            Command="{Binding DataContext.ToggleFavouriteCommand,
+                                                RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}">
+                                        <TextBlock Text="{Binding IsFavourite,
+                                                       Converter={StaticResource FavouriteIconConverter}}"/>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>
