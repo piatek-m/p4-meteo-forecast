@@ -31,5 +31,5 @@ public class HourlyData
     public List<int> Humidity { get; set; } = [];
 
     [JsonPropertyName("weather_code")]
-    public List<string> WeatherCode { get; set; } = [];
+    public List<int> WeatherCode { get; set; } = [];
 }
