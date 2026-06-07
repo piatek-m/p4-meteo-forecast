@@ -24,7 +24,6 @@
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type vm:CityWeatherViewModel}">
-                        <views:CityWeatherView/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
                         <views:SettingsView/>
@@ -46,10 +45,11 @@
                         <TextBox Text="{Binding SearchViewModel.SearchQuery, UpdateSourceTrigger=PropertyChanged}"
                                  PreviewTextInput="SearchBox_PreviewTextInput"
                                  PreviewKeyDown="SearchBox_PreviewKeyDown"
+                                 PreviewMouseDown="SearchBox_PreviewMouseDown"
                                  Background="#F0F0F0"
                                  BorderThickness="0"
                                  Padding="10,6"
-                                 FontSize="14">
+                                 FontSize="17">
                                 <TextBox.InputBindings>
                                         <KeyBinding Key="Return"
                                                     Command="{Binding SearchViewModel.SearchCommand}"/>
@@ -81,7 +81,7 @@
                                         Cursor="Hand">
                                         <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="⚠"
-                                                           FontSize="18"
+                                                           FontSize="23"
                                                            Foreground="{Binding AlertsViewModel.HasActiveAlerts,
                                        Converter={StaticResource AlertColorConverter}}"/>
                                                 <Border Background="#CC333333"
@@ -92,7 +92,7 @@
                                     Converter={StaticResource BoolToVis}}">
                                                         <TextBlock Text="{Binding AlertsViewModel.ActiveAlertsCount}"
                                                                    Foreground="White"
-                                                                   FontSize="11"/>
+                                                                   FontSize="14"/>
                                                 </Border>
                                         </StackPanel>
                                 </Button>
@@ -108,7 +108,7 @@
                                                 BorderThickness="0"
                                                 Cursor="Hand">
                                                 <TextBlock Text="⚙"
-                                                           FontSize="18"/>
+                                                           FontSize="23"/>
                                         </Button>
                                 </Border>
                         </Grid>

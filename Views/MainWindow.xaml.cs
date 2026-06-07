@@ -12,7 +12,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         DataContext = shellViewModel;
-        File.AppendAllText("debug.log", "MainWindow ctor\n");
     }
 
     private void SearchBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -26,6 +25,12 @@ public partial class MainWindow : Window
     {
         if (e.Key == Key.Return
             && DataContext is ShellViewModel shell
+            && shell.CurrentViewModel is not SearchViewModel)
+            shell.NavigateTo<SearchViewModel>();
+    }
+    private void SearchBox_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (DataContext is ShellViewModel shell
             && shell.CurrentViewModel is not SearchViewModel)
             shell.NavigateTo<SearchViewModel>();
     }
