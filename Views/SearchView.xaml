@@ -8,6 +8,52 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <converters:FavouriteIconConverter x:Key="FavouriteIconConverter"/>
         <converters:WeatherIconConverter x:Key="WeatherIconConverter"/>
+
+        <DataTemplate x:Key="CityItemTemplate"
+                      DataType="{x:Type vm:FavouriteCityViewModel}">
+            <Border BorderThickness="0,0,0,1"
+                    BorderBrush="#11000000"
+                    Padding="8,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Name+country -->
+                    <StackPanel Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Cursor="Hand">
+                        <StackPanel.InputBindings>
+                            <MouseBinding MouseAction="LeftClick"
+                                          Command="{Binding DataContext.SelectCityCommand,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                          CommandParameter="{Binding City}"/>
+                        </StackPanel.InputBindings>
+                        <TextBlock Text="{Binding City.Name}"
+                                   FontSize="18"
+                                   FontWeight="Medium"/>
+                        <TextBlock Text="{Binding City.Country}"
+                                   FontSize="16"
+                                   Foreground="Gray"/>
+                    </StackPanel>
+                    <!-- Fav symbol -->
+                    <Button Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            FontSize="21"
+                            Cursor="Hand"
+                            Command="{Binding DataContext.ToggleFavouriteCommand,
+                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding}">
+                        <TextBlock Text="{Binding IsFavourite,
+                            Converter={StaticResource FavouriteIconConverter}}"/>
+                    </Button>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
     </UserControl.Resources>
 
     <Grid Margin="16">
@@ -29,17 +75,18 @@
                      x:Name="SearchBox"
                      Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
                      Padding="10,6"
-                     FontSize="14"
+                     FontSize="17"
                      VerticalContentAlignment="Center">
                 <TextBox.InputBindings>
                     <KeyBinding Key="Return"
                                 Command="{Binding SearchCommand}"/>
                 </TextBox.InputBindings>
             </TextBox>
-
+            <!-- Close button -->
             <Button Grid.Column="1"
-                    Content="✕"
+                    Content="❌"
                     Margin="8,0,0,0"
+                    FontSize="18"
                     Padding="10,6"
                     Command="{Binding DataContext.GoBackCommand,
                         RelativeSource={RelativeSource AncestorType=Window}}"
@@ -55,74 +102,31 @@
                 Background="Transparent">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="🧭"
+                           FontSize="18"
                            Margin="0,0,6,0"/>
-                <TextBlock Text="Użyj mojej lokalizacji"/>
+                <TextBlock Text="Użyj mojej lokalizacji"
+                           FontSize="16"/>
             </StackPanel>
         </Button>
 
         <!-- Results section -->
         <Grid Grid.Row="2">
-
+            <!-- Recents - visible when search bar is empty -->
+            <ItemsControl ItemsSource="{Binding RecentSearches}"
+                          ItemTemplate="{StaticResource CityItemTemplate}"
+                          Visibility="{Binding ShowRecents, Converter={StaticResource BoolToVis}}"/>
             <!-- No results -->
             <TextBlock Text="Brak wyników"
-                       Foreground="Gray"
+                       FontSize="16"
+                       Foreground="DimGray"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Visibility="{Binding ShowNoResults,
                            Converter={StaticResource BoolToVis}}"/>
 
             <!-- Result list -->
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding Results}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type vm:FavouriteCityViewModel}">
-                            <Border BorderThickness="0,0,0,1"
-                                    BorderBrush="#11000000"
-                                    Padding="8,10">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <!-- Name+country -->
-                                    <StackPanel Grid.Column="0"
-                                                VerticalAlignment="Center"
-                                                Cursor="Hand">
-                                        <StackPanel.InputBindings>
-                                            <MouseBinding MouseAction="LeftClick"
-                                                          Command="{Binding DataContext.SelectCityCommand,
-                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                          CommandParameter="{Binding}"/>
-                                        </StackPanel.InputBindings>
-                                        <TextBlock Text="{Binding City.Name}"
-                                                   FontSize="14"
-                                                   FontWeight="Medium"/>
-                                        <TextBlock Text="{Binding City.Country}"
-                                                   FontSize="12"
-                                                   Foreground="Gray"/>
-                                    </StackPanel>
-
-                                    <!-- Fav symbol -->
-                                    <Button Grid.Column="2"
-                                            VerticalAlignment="Center"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            FontSize="18"
-                                            Cursor="Hand"
-                                            Command="{Binding DataContext.ToggleFavouriteCommand,
-                                                RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}">
-                                        <TextBlock Text="{Binding IsFavourite,
-                                                       Converter={StaticResource FavouriteIconConverter}}"/>
-                                    </Button>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Results}"
+                          ItemTemplate="{StaticResource CityItemTemplate}"/>
         </Grid>
     </Grid>
 </UserControl>
