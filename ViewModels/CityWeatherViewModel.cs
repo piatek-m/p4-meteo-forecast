@@ -1,14 +1,18 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
+using MeteoForecast.Converters.Units;
 using MeteoForecast.Models;
 using MeteoForecast.Services.Interfaces;
+using MeteoForecast.ViewModels.Display;
 using MeteoForecast.ViewModels.Generics;
 namespace MeteoForecast.ViewModels;
 
 public class CityWeatherViewModel : BaseViewModel
 {
     private readonly IWeatherCacheService _weatherCacheService;
+    private readonly ISettingsService _settingsService;
+    private readonly IAlertService _alertService;
 
     private City? _selectedCity;
     public City? SelectedCity
@@ -43,20 +47,26 @@ public class CityWeatherViewModel : BaseViewModel
         2 => "pojutrze",
         _ => SelectedDay.ToString("ddd d MMM")
     };
-    public ObservableCollection<HourlyWeather> Forecast { get; } = [];
+
+    public ObservableCollection<HourlyWeatherDisplay> ForecastDisplay { get; } = [];
 
     public AsyncRelayCommand NextDayCommand { get; }
     public AsyncRelayCommand PreviousDayCommand { get; }
 
-    public CityWeatherViewModel(IWeatherCacheService weatherCacheService)
+    public CityWeatherViewModel(
+        IWeatherCacheService weatherCacheService,
+        ISettingsService settingsService,
+        IAlertService alertService)
     {
         _weatherCacheService = weatherCacheService;
+        _settingsService = settingsService;
+        _alertService = alertService;
 
         NextDayCommand = new AsyncRelayCommand(async _ => await NextDayAsync());
         PreviousDayCommand = new AsyncRelayCommand(async _ => await PreviousDayAsync());
     }
 
-    private async Task LoadForecastAsync()
+    public async Task LoadForecastAsync()
     {
         if (SelectedCity is null)
             return;
@@ -67,9 +77,29 @@ public class CityWeatherViewModel : BaseViewModel
             SelectedCity.Longitude,
             SelectedDay
         );
-        Forecast.Clear();
-        foreach (var item in data)
-            Forecast.Add(item);
+
+        var settings = _settingsService.GetSettings();
+
+        var display = data.Select(h => new HourlyWeatherDisplay
+        {
+            Time = h.DateTime.ToString("HH:mm"),
+            Temperature = UnitConverter.Convert(h.Temperature, UnitType.Temperature, settings),
+            FeelsLike = UnitConverter.Convert(h.FeelsLike, UnitType.Temperature, settings),
+            Pressure = UnitConverter.Convert(h.Pressure, UnitType.Pressure, settings),
+            WindSpeed = UnitConverter.Convert(h.WindSpeed, UnitType.WindSpeed, settings),
+            WindDirection = WindConverter.Convert(h.WindDirection, settings.WindDirectionDisplay),
+            Humidity = $"{h.Humidity}%",
+            Precipitation = $"{h.Precipitation:F1}mm", // Hardcoded, could add inches or whatever option
+            Snowfall = $"{h.Snowfall:F1}cm",
+            PrecipitationRaw = h.Precipitation, // Because GreaterThanZeroConverter takes double
+            SnowfallRaw = h.Snowfall,           // Because GreaterThanZeroConverter takes double
+            WeatherCode = h.WeatherCode,
+        }).ToList();
+
+        ForecastDisplay.Clear();
+        foreach (var item in display)
+            ForecastDisplay.Add(item);
+        await _alertService.CheckAlertAsync(SelectedCity.Id);
     }
 
     private async Task NextDayAsync()
