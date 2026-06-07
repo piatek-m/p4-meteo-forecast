@@ -6,4 +6,5 @@ public interface ILocationService
 {
     Task<List<City>> SearchCitiesAsync(string query);
     Task<(double Lat, double Lon)> GetCurrentLocationAsync();
+    Task<City?> GetCityByLocationAsync(double lat, double lon);
 }
