@@ -27,87 +27,50 @@ public partial class App : Application
 
     public App()
     {
-        try
-        {
-            host = Host.CreateDefaultBuilder()
+        host = Host.CreateDefaultBuilder()
 
-                .ConfigureAppConfiguration((context, config) =>
-                    {
-                        config.AddJsonFile("appsettings.json",
-                        optional: false,
-                        reloadOnChange: true);
-                    })
+            .ConfigureAppConfiguration((context, config) =>
+                {
+                    config.AddJsonFile("appsettings.json",
+                    optional: false,
+                    reloadOnChange: true);
+                })
 
-                    .ConfigureServices((context, services) =>
-                    {
-                        services
-                            .AddConfiguration(context.Configuration)
-                            .AddDatabase()
-                            .AddRepositories()
-                            .AddAppServices()
-                            .AddViewModels()
-                            .AddSingleton<MainWindow>(); // Since Shell & DataTemplate are used, only one window needs to register DI.
+                .ConfigureServices((context, services) =>
+                {
+                    services
+                        .AddConfiguration(context.Configuration)
+                        .AddDatabase()
+                        .AddRepositories()
+                        .AddAppServices()
+                        .AddViewModels()
+                        .AddSingleton<MainWindow>(); // Since Shell & DataTemplate are used, only one window needs to register DI.
 
-                    })
-                    .Build();
-        }
-        catch (Exception ex)
-        {
-            File.WriteAllText("constructor_app_xaml.log", ex.ToString());
-            throw;
-        }
+                })
+                .Build();
     }
 
     protected override async void OnStartup(StartupEventArgs e)
     {
-        try
+        base.OnStartup(e);
+        host.Start();
+        var shell = host.Services.GetRequiredService<ShellViewModel>();
+        shell.Initialize();
+
+        using (var scope = host.Services.CreateScope())
         {
-            File.AppendAllText("debug.log", $"Startup begin at {DateTime.Now}\n");
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var dbPath = Path.Combine(AppContext.BaseDirectory, "meteoforecast.db");
+            db.Database.Migrate();
 
-            base.OnStartup(e);
-            host.Start();
-            File.AppendAllText("debug.log", "Host started\n");
-
-            var shell = host.Services.GetRequiredService<ShellViewModel>();
-            shell.Initialize();
-            File.AppendAllText("debug.log", "Shell initialized\n");
-
-            using (var scope = host.Services.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-                var dbPath = Path.Combine(AppContext.BaseDirectory, "meteoforecast.db");
-                File.AppendAllText("debug.log", $"DB path: {dbPath}\n");
-                db.Database.Migrate();
-                File.AppendAllText("debug.log", "Migrate done\n");
-
-                File.AppendAllText("debug.log", "Migrated\n");
-                var cacheService = scope.ServiceProvider.GetRequiredService<IWeatherCacheService>();
-                await cacheService.CleanupExpiredAsync();
-                File.AppendAllText("debug.log", "Cleanup done\n");
-            }
-
-            File.AppendAllText("debug.log", "Resolving MainWindow\n");
-            try
-            {
-                var mainWindow = host.Services.GetRequiredService<MainWindow>();
-                File.AppendAllText("debug.log", "MainWindow resolved\n");
-
-                MainWindow = mainWindow;
-                mainWindow.Show();
-                File.AppendAllText("debug.log", "MainWindow shown, YIPEEEE!!!!\n");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-                throw;
-            }
+            var cacheService = scope.ServiceProvider.GetRequiredService<IWeatherCacheService>();
+            await cacheService.CleanupExpiredAsync();
         }
-        catch (Exception ex)
-        {
-            File.WriteAllText("startup_app_xaml.log", ex.ToString());
-            throw;
-        }
+
+        var mainWindow = host.Services.GetRequiredService<MainWindow>();
+        MainWindow = mainWindow;
+        mainWindow.Show();
+
     }
 
     protected override async void OnExit(ExitEventArgs e)
