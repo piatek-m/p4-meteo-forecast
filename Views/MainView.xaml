@@ -23,8 +23,8 @@
         <!-- Header -->
         <TextBlock Grid.Row="0"
                    Text="Ulubione"
-                   FontSize="13"
-                   Foreground="Gray"
+                   FontSize="17"
+                   Foreground="SteelBlue"
                    Margin="0,0,0,8"/>
 
         <!-- Favourites grid -->
@@ -62,10 +62,11 @@
                             <Grid Grid.Row="0">
                                 <TextBlock Text="{Binding City.Name}"
                                            FontWeight="Medium"
-                                           FontSize="13"/>
+                                           FontSize="16"/>
                                 <Button HorizontalAlignment="Right"
                                         Background="Transparent"
                                         BorderThickness="0"
+                                        FontSize="15"
                                         Cursor="Hand"
                                         Command="{Binding DataContext.ToggleFavouritesCommand,
                                             RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -78,7 +79,7 @@
                             <!-- Country -->
                             <TextBlock Grid.Row="1"
                                        Text="{Binding City.Country}"
-                                       FontSize="11"
+                                       FontSize="16"
                                        Foreground="Gray"
                                        Margin="0,2,0,0"/>
 
@@ -87,11 +88,11 @@
                                         Orientation="Horizontal"
                                         Margin="0,6,0,0">
                                 <TextBlock Text="{Binding Temperature, StringFormat='{}{0:F0}°'}"
-                                           FontSize="18"
+                                           FontSize="21"
                                            FontWeight="Medium"/>
                                 <TextBlock Text="{Binding WeatherCode, 
                    Converter={StaticResource WeatherIconConverter}}"
-                                           FontSize="18"
+                                           FontSize="23"
                                            Margin="6,0,0,0"/>
                             </StackPanel>
 
@@ -120,11 +121,11 @@
                       Margin="0,0,0,12">
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="{Binding SelectedCity.Name}"
-                                   FontSize="18"
+                                   FontSize="21"
                                    FontWeight="Bold"/>
                         <TextBlock Text="{Binding DayLabel}"
-                                   FontSize="13"
-                                   Foreground="Gray"
+                                   FontSize="16"
+                                   Foreground="SteelBlue"
                                    Margin="0,2,0,0"/>
                     </StackPanel>
                     <StackPanel HorizontalAlignment="Right"
@@ -148,14 +149,14 @@
                 <ScrollViewer Grid.Row="1"
                               HorizontalScrollBarVisibility="Auto"
                               VerticalScrollBarVisibility="Hidden">
-                    <ItemsControl ItemsSource="{Binding Forecast}">
+                    <ItemsControl ItemsSource="{Binding ForecastDisplay}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal"/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="{x:Type models:HourlyWeather}">
+                            <DataTemplate>
                                 <Border Margin="0,0,8,0"
                                         Background="#F5F5F5"
                                         CornerRadius="6"
@@ -163,68 +164,68 @@
                                         MinWidth="80">
                                     <StackPanel HorizontalAlignment="Center">
                                         <!-- Particular hour/time -->
-                                        <TextBlock Text="{Binding DateTime, StringFormat='{}{0:HH:mm}'}"
-                                                   FontSize="11"
-                                                   Foreground="Gray"
+                                        <TextBlock Text="{Binding Time, StringFormat='{}{0:HH:mm}'}"
+                                                   FontSize="19"
+                                                   Foreground="Black"
                                                    HorizontalAlignment="Center"/>
                                         <!-- Weather code icon -->
                                         <TextBlock Text="{Binding WeatherCode,
                                                Converter={StaticResource WeatherIconConverter}}"
-                                                   FontSize="26"
+                                                   FontSize="36"
                                                    HorizontalAlignment="Center"
                                                    Margin="0,6,0,6"/>
                                         <!-- Temperature -->
-                                        <TextBlock Text="{Binding Temperature, StringFormat='{}{0:F0}°'}"
-                                                   FontSize="14"
+                                        <TextBlock Text="{Binding Temperature, StringFormat='{}{0:F0}'}"
+                                                   FontSize="20"
                                                    FontWeight="Bold"
                                                    HorizontalAlignment="Center"/>
                                         <!-- Feels like -->
-                                        <TextBlock Text="{Binding FeelsLike, StringFormat='{}odcz. {0:F0}°'}"
-                                                   FontSize="10"
-                                                   Foreground="Gray"
+                                        <TextBlock Text="{Binding FeelsLike, StringFormat='{}odcz. {0:F0}'}"
+                                                   FontSize="18"
+                                                   Foreground="Black"
                                                    HorizontalAlignment="Center"
                                                    Margin="0,2,0,0"/>
                                         <!-- Separator-->
                                         <Border Height="1"
                                                 Background="#22000000"
                                                 Margin="0,6,0,6"/>
-                                        <!-- Rainfall -->
-                                        <TextBlock Text="{Binding Precipitation, StringFormat='{}{0:F1}mm'}"
-                                                   FontSize="10"
+                                        <!-- Precipitation -->
+                                        <TextBlock Text="{Binding Precipitation}"
+                                                   FontSize="18"
                                                    Foreground="#378ADD"
                                                    HorizontalAlignment="Center"
-                                                   Visibility="{Binding Precipitation, 
+                                                   Visibility="{Binding PrecipitationRaw,
                                                    Converter={StaticResource GreaterThanZeroConverter}}"/>
                                         <!-- Snowfall -->
-                                        <TextBlock Text="{Binding Snowfall, StringFormat='{}{0:F1}cm śn.'}"
-                                                   FontSize="10"
+                                        <TextBlock Text="{Binding Snowfall}"
+                                                   FontSize="18"
                                                    Foreground="#88AADD"
                                                    HorizontalAlignment="Center"
-                                                   Visibility="{Binding Snowfall, 
-                                                   Converter={StaticResource GreaterThanZeroConverter}}"
-                                                   Margin="0,2,0,0"/>
+                                                   Margin="0,2,0,0"
+                                                   Visibility="{Binding SnowfallRaw,
+                                                   Converter={StaticResource GreaterThanZeroConverter}}"/>
                                         <!-- Pressure -->
-                                        <TextBlock Text="{Binding Pressure, StringFormat='{}{0:F0}hPa'}"
-                                                   FontSize="10"
-                                                   Foreground="Gray"
+                                        <TextBlock Text="{Binding Pressure, StringFormat='{}{0:F0}'}"
+                                                   FontSize="18"
+                                                   Foreground="Black"
                                                    HorizontalAlignment="Center"
                                                    Margin="0,2,0,0"/>
                                         <!-- Wind speed -->
-                                        <TextBlock Text="{Binding WindSpeed, StringFormat='{}{0:F1}m/s'}"
-                                                   FontSize="10"
-                                                   Foreground="Gray"
+                                        <TextBlock Text="{Binding WindSpeed, StringFormat='{}{0:F1}'}"
+                                                   FontSize="18"
+                                                   Foreground="Black"
                                                    HorizontalAlignment="Center"
                                                    Margin="0,2,0,0"/>
                                         <!-- Wind direction -->
                                         <TextBlock Text="{Binding WindDirection}"
-                                                   FontSize="10"
-                                                   Foreground="Gray"
+                                                   FontSize="18"
+                                                   Foreground="Black"
                                                    HorizontalAlignment="Center"
                                                    Margin="0,2,0,0"/>
                                         <!-- Humidity-->
-                                        <TextBlock Text="{Binding Humidity, StringFormat='{}{0}%'}"
-                                                   FontSize="10"
-                                                   Foreground="Gray"
+                                        <TextBlock Text="{Binding Humidity, StringFormat='{}{0}'}"
+                                                   FontSize="18"
+                                                   Foreground="Black"
                                                    HorizontalAlignment="Center"
                                                    Margin="0,2,0,0"/>
                                     </StackPanel>
