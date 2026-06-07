@@ -1,8 +1,5 @@
-using System.Security.Cryptography.X509Certificates;
 using MeteoForecast.Services.Interfaces;
 using MeteoForecast.ViewModels.Generics;
-using MeteoForecast.Views;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MeteoForecast.ViewModels;
@@ -11,7 +8,6 @@ public class ShellViewModel : BaseViewModel, INavigationService
 {
     private readonly IServiceProvider _services;
 
-    public AlertsViewModel AlertsViewModel => _services.GetRequiredService<AlertsViewModel>();
     public SearchViewModel SearchViewModel => _services.GetRequiredService<SearchViewModel>();
 
     private BaseViewModel _currentViewModel = null!;
@@ -64,11 +60,15 @@ public class ShellViewModel : BaseViewModel, INavigationService
         var vm = _services.GetRequiredService<TViewModel>();
         if (CurrentViewModel == vm) return;
 
+        var previous = CurrentViewModel;
         _previousViewModel = CurrentViewModel;
         CurrentViewModel = vm;
         IsAlertsOpen = false;
 
-        vm.OnNavigatedTo();
+        if (vm is MainViewModel mainVm)
+            mainVm.OnNavigatedToFrom(previous);
+        else
+            vm.OnNavigatedTo();
         GoBackCommand.RaiseCanExecuteChanged();
     }
 
@@ -83,11 +83,15 @@ public class ShellViewModel : BaseViewModel, INavigationService
             return;
         }
 
+        var previous = CurrentViewModel;
         _previousViewModel = CurrentViewModel;
         CurrentViewModel = vm;
         IsAlertsOpen = false;
 
-        vm.OnNavigatedTo();
+        if (vm is MainViewModel mainVm)
+            mainVm.OnNavigatedToFrom(previous);
+        else
+            vm.OnNavigatedTo();
         GoBackCommand.RaiseCanExecuteChanged();
     }
 
@@ -95,10 +99,14 @@ public class ShellViewModel : BaseViewModel, INavigationService
     {
         if (_previousViewModel is null) return;
 
+        var previous = CurrentViewModel;
         CurrentViewModel = _previousViewModel;
         _previousViewModel = null;
 
-        CurrentViewModel.OnNavigatedTo();
+        if (CurrentViewModel is MainViewModel mainVm)
+            mainVm.OnNavigatedToFrom(previous);
+        else
+            CurrentViewModel.OnNavigatedTo();
         GoBackCommand.RaiseCanExecuteChanged();
     }
 
