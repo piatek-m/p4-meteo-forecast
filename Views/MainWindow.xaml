@@ -126,7 +126,7 @@
                         CornerRadius="8,8,0,0"
                         Visibility="{Binding IsAlertsOpen,
                     Converter={StaticResource BoolToVis}}">
-                        <views:AlertsView DataContext="{Binding AlertsViewModel}"/>
+                        <!-- <views:AlertsView DataContext="{Binding AlertsViewModel}"/> -->
                 </Border>
         </Grid>
 
