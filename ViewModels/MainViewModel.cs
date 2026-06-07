@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Net.Http;
 using System.Reflection;
 using System.Security.Permissions;
 using MeteoForecast.Models;
@@ -11,9 +12,7 @@ namespace MeteoForecast.ViewModels;
 public class MainViewModel : BaseViewModel
 {
     private readonly ICityRepository _cityRepository;
-    private readonly ISearchHistoryRepository _searchHistoryRepository;
-    private readonly IWeatherCacheService _weatherCacheService;
-    private readonly INavigationService _navigation;
+    private readonly IWeatherApiService _weatherApiService;
 
     public CityWeatherViewModel CityWeather { get; }
 
@@ -28,7 +27,6 @@ public class MainViewModel : BaseViewModel
         {
             if (SetProperty(ref _selectedCity, value) && value is not null)
                 CityWeather.SelectedCity = value;
-            // _navigation.NavigateTo<CityWeatherViewModel>(vm => vm.SelectedCity = value);
         }
     }
 
@@ -38,16 +36,12 @@ public class MainViewModel : BaseViewModel
 
     public MainViewModel(
         ICityRepository cityRepository,
-        ISearchHistoryRepository searchHistoryRepository,
-        IWeatherCacheService weatherCacheService,
-        INavigationService navigation,
-        CityWeatherViewModel cityWeather
+        CityWeatherViewModel cityWeather,
+        IWeatherApiService weatherApiService
     )
     {
         _cityRepository = cityRepository;
-        _searchHistoryRepository = searchHistoryRepository;
-        _weatherCacheService = weatherCacheService;
-        _navigation = navigation;
+        _weatherApiService = weatherApiService;
 
         CityWeather = cityWeather;
 
@@ -63,9 +57,15 @@ public class MainViewModel : BaseViewModel
         });
     }
 
+    public void OnNavigatedToFrom(BaseViewModel? previous)
+    {
+        OnNavigatedTo();
+        if (previous is SettingsViewModel && CityWeather.SelectedCity is not null)
+            _ = CityWeather.LoadForecastAsync();
+    }
+
     public override void OnNavigatedTo()
     {
-        System.Diagnostics.Debug.WriteLine("MainViewModel.OnNavigatedTo called");
         _ = LoadDataAsync();
     }
 
@@ -73,40 +73,32 @@ public class MainViewModel : BaseViewModel
     {
         var favourites = await _cityRepository.GetFavouritesAsync();
         Favourites.Clear();
-        foreach (var city in favourites)
-        {
-            var vm = new FavouriteCityViewModel(city);
-            Favourites.Add(vm);
-            _ = LoadTemperatureAsync(vm);
-        }
 
-        var recent = await _searchHistoryRepository.GetRecentAsync(10);
-        RecentSearches.Clear();
-        foreach (var entry in recent)
-            RecentSearches.Add(entry);
+        var vms = favourites.Select(city => new FavouriteCityViewModel(city)).ToList();
+        foreach (var vm in vms)
+            Favourites.Add(vm);
+
+        if (vms.Count > 0)
+            await LoadTemperaturesBatchAsync(vms);
     }
 
-    private async Task LoadTemperatureAsync(FavouriteCityViewModel vm)
+    private async Task LoadTemperaturesBatchAsync(List<FavouriteCityViewModel> vms)
     {
-        var data = await _weatherCacheService.GetWeatherForDayAsync(
-            vm.City.Id,
-            vm.City.Latitude,
-            vm.City.Longitude,
-            DateTime.Today
-        );
+        var locations = vms
+            .Select(vm => (vm.City.Latitude, vm.City.Longitude))
+            .ToList();
+
+        var results = await _weatherApiService.FetchHourlyBatchAsync(locations, DateTime.Today);
 
         var now = DateTime.Now;
-        var closest = data
-            .Where(h => h.DateTime <= now)
-            .MaxBy(h => h.DateTime);
-
-        App.Current.Dispatcher.Invoke(() =>
+        for (int i = 0; i < vms.Count; i++)
         {
-            vm.Temperature = closest?.Temperature;
-            vm.WeatherCode = closest?.WeatherCode;
-        });
-
-        // RunOnUI(() => vm.Temperature = closest?.Temperature);
+            var closest = results[i]
+                .Where(h => h.DateTime <= now)
+                .MaxBy(h => h.DateTime);
+            vms[i].Temperature = closest?.Temperature;
+            vms[i].WeatherCode = closest?.WeatherCode;
+        }
     }
 
     private async Task ToggleFavouritesAsync(City? city)
