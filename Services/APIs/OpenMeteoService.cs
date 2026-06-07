@@ -3,6 +3,8 @@ using MeteoForecast.Services.Interfaces;
 using MeteoForecast.Models;
 using System.Net.Http.Json;
 using MeteoForecast.DTOs.OpenMeteo;
+using System.IO;
+using System.Text.Json;
 
 namespace MeteoForecast.Services.APIs;
 
@@ -15,6 +17,8 @@ public class OpenMeteoService(HttpClient httpClient) : BaseHttpApiService(httpCl
 
     public async Task<List<HourlyWeather>> FetchHourlyAsync(double lat, double lon, DateTime day)
     {
+        System.Diagnostics.Debug.WriteLine($"API call for {day:yyyy-MM-dd}");
+
         var date = day.ToString("yyyy-MM-dd");
         var url =
             $"{ApiUrl}?latitude={lat}&longitude={lon}" +
@@ -23,6 +27,30 @@ public class OpenMeteoService(HttpClient httpClient) : BaseHttpApiService(httpCl
 
         var response = await GetAsync<OpenMeteoResponse>(url);
         return MapResponseToWeather(response);
+    }
+
+    public async Task<List<List<HourlyWeather>>> FetchHourlyBatchAsync(IList<(double Lat, double Lon)> locations, DateTime day)
+    {
+        System.Diagnostics.Debug.WriteLine($"API call for {day:yyyy-MM-dd}, using FetchBatch");
+
+        if (locations.Count == 1)
+        {
+            var single = await FetchHourlyAsync(
+                locations[0].Lat, locations[0].Lon, day);
+            return [single];
+        }
+        var date = day.ToString("yyyy-MM-dd");
+        var lats = string.Join(",", locations.Select(l => l.Lat));
+        var lons = string.Join(",", locations.Select(l => l.Lon));
+
+        var url =
+            $"{ApiUrl}?latitude={lats}&longitude={lons}" +
+            $"&hourly={HourlyFields}" +
+            $"&start_date={date}&end_date={date}";
+
+        var responses = await GetAsync<List<OpenMeteoResponse>>(url);
+
+        return [.. responses.Select(MapResponseToWeather)];
     }
 
     private static List<HourlyWeather> MapResponseToWeather(OpenMeteoResponse response)
