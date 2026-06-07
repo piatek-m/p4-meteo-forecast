@@ -54,7 +54,7 @@ public static class ServiceCollectionExtension
         services.AddSingleton<ILocationService, NominatimService>();
 
         services.AddTransient<IWeatherCacheService, WeatherCacheService>();
-        // services.AddTransient<IAlertService, AlertService>();
+        services.AddTransient<IAlertService, AlertService>();
         services.AddTransient<ISettingsService, SettingsService>();
 
         return services;
@@ -63,25 +63,13 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddViewModels(this IServiceCollection services)
     {
         services.AddSingleton<ShellViewModel>();
-        services.AddSingleton<INavigationService>(sp =>
-            (INavigationService)sp.GetRequiredService<ShellViewModel>());
+        services.AddSingleton(sp => (INavigationService)sp.GetRequiredService<ShellViewModel>());
         services.AddSingleton<MainViewModel>();
-        services.AddSingleton<AlertsViewModel>();
+        // services.AddSingleton<AlertsViewModel>();
         services.AddSingleton<CityWeatherViewModel>();
         services.AddSingleton<SearchViewModel>();
         services.AddSingleton<SettingsViewModel>();
 
         return services;
     }
-
-    /*  public static IServiceCollection AddViews(this IServiceCollection services)
-     {
-         services.AddSingleton<MainWindow>();
-         // services.AddSingleton<AlertsView>();
-         services.AddSingleton<CityWeatherView>();
-         services.AddSingleton<SearchView>();
-         services.AddSingleton<SettingsView>();
-
-         return services;
-     } */
 }
