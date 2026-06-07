@@ -54,7 +54,7 @@ public static class ServiceCollectionExtension
         services.AddSingleton<ILocationService, NominatimService>();
 
         services.AddTransient<IWeatherCacheService, WeatherCacheService>();
-        services.AddTransient<IAlertService, AlertService>();
+        // services.AddTransient<IAlertService, AlertService>();
         services.AddTransient<ISettingsService, SettingsService>();
 
         return services;
