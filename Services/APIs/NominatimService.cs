@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Globalization;
 using System.Net.Http;
 using MeteoForecast.DTOs.Nominatim;
 using MeteoForecast.Models;
@@ -59,6 +60,21 @@ public class NominatimService : BaseHttpApiService, ILocationService
         var coord = position.Coordinate.Point.Position;
 
         return (coord.Latitude, coord.Longitude);
+    }
+
+    public async Task<City?> GetCityByLocationAsync(double lat, double lon)
+    {
+        await EnforceRateLimitAsync();
+        var url =
+            $"https://nominatim.openstreetmap.org/reverse" +
+            $"?lat={lat.ToString(CultureInfo.InvariantCulture)}" +
+            $"&lon={lon.ToString(CultureInfo.InvariantCulture)}" +
+            $"&format=json&addressdetails=1" +
+            $"&accept-language=pl";
+
+        var result = await GetAsync<NominatimResult>(url);
+        if (result is null) return null;
+        return MapResponseToCity(result);
     }
 
     private static City MapResponseToCity(NominatimResult result) => new()
