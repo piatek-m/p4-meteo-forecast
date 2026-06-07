@@ -12,7 +12,7 @@ public class CityWeatherViewModel : BaseViewModel
 {
     private readonly IWeatherCacheService _weatherCacheService;
     private readonly ISettingsService _settingsService;
-    private readonly IAlertService _alertService;
+    // private readonly IAlertService _alertService;
 
     private City? _selectedCity;
     public City? SelectedCity
@@ -55,12 +55,13 @@ public class CityWeatherViewModel : BaseViewModel
 
     public CityWeatherViewModel(
         IWeatherCacheService weatherCacheService,
-        ISettingsService settingsService,
-        IAlertService alertService)
+        ISettingsService settingsService
+        // IAlertService alertService
+        )
     {
         _weatherCacheService = weatherCacheService;
         _settingsService = settingsService;
-        _alertService = alertService;
+        // _alertService = alertService;
 
         NextDayCommand = new AsyncRelayCommand(async _ => await NextDayAsync());
         PreviousDayCommand = new AsyncRelayCommand(async _ => await PreviousDayAsync());
@@ -99,7 +100,7 @@ public class CityWeatherViewModel : BaseViewModel
         ForecastDisplay.Clear();
         foreach (var item in display)
             ForecastDisplay.Add(item);
-        await _alertService.CheckAlertAsync(SelectedCity.Id);
+        // await _alertService.CheckAlertAsync(SelectedCity.Id);
     }
 
     private async Task NextDayAsync()
