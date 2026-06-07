@@ -84,16 +84,16 @@
                                                            FontSize="23"
                                                            Foreground="{Binding AlertsViewModel.HasActiveAlerts,
                                        Converter={StaticResource AlertColorConverter}}"/>
-                                                <Border Background="#CC333333"
+                                                <!-- <Border Background="#CC333333"
                                                         CornerRadius="8"
                                                         Padding="4,1"
                                                         Margin="4,0,0,0"
-                                                        Visibility="{Binding AlertsViewModel.HasActiveAlerts,
+                                                        Visibility="{Binding .HasActiveAlerts,
                                     Converter={StaticResource BoolToVis}}">
                                                         <TextBlock Text="{Binding AlertsViewModel.ActiveAlertsCount}"
                                                                    Foreground="White"
                                                                    FontSize="14"/>
-                                                </Border>
+                                                </Border> -->
                                         </StackPanel>
                                 </Button>
 
@@ -115,7 +115,7 @@
                 </Border>
 
                 <!-- Alert panel as overlay -->
-                <Border Grid.Row="0"
+                <!-- <Border Grid.Row="0"
                         Grid.RowSpan="3"
                         VerticalAlignment="Bottom"
                         Margin="0,0,0,40"
@@ -126,8 +126,7 @@
                         CornerRadius="8,8,0,0"
                         Visibility="{Binding IsAlertsOpen,
                     Converter={StaticResource BoolToVis}}">
-                        <!-- <views:AlertsView DataContext="{Binding AlertsViewModel}"/> -->
-                </Border>
+                        <views:AlertsView DataContext="{Binding AlertsViewModel}"/> 
+                </Border>-->
         </Grid>
-
 </Window>
