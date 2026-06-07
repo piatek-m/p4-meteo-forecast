@@ -1,0 +1,124 @@
+<UserControl x:Class="MeteoForecast.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:MeteoForecast.Converters"
+             xmlns:vm="clr-namespace:MeteoForecast.ViewModels">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:EnumDisplayNameConverter x:Key="EnumDisplayName"/>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16">
+
+            <TextBlock Text="Ustawienia"
+                       FontSize="22"
+                       FontWeight="Bold"
+                       Margin="0,0,0,24"/>
+
+            <!-- Temperature unit -->
+            <TextBlock Text="Jednostka temperatury"
+                       FontSize="16"
+                       Margin="0,0,0,6"/>
+            <ListBox ItemsSource="{Binding TemperatureUnits}"
+                     SelectedItem="{Binding TemperatureUnit}"
+                     FontSize="17"
+                     Margin="0,0,0,16">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding  Converter={StaticResource EnumDisplayName}}"
+                                   Padding="12,6"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- Pressure unit -->
+            <TextBlock Text="Jednostka ciśnienia"
+                       FontSize="16"
+                       Margin="0,0,0,6"/>
+            <ListBox ItemsSource="{Binding PressureUnits}"
+                     SelectedItem="{Binding PressureUnit}"
+                     FontSize="17"
+                     Margin="0,0,0,16">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding  Converter={StaticResource EnumDisplayName}}"
+                                   Padding="12,6"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- Wind speed unit -->
+            <TextBlock Text="Jednostka prędkości wiatru"
+                       FontSize="16"
+                       Margin="0,0,0,6"/>
+            <ListBox ItemsSource="{Binding WindSpeedUnits}"
+                     SelectedItem="{Binding WindSpeedUnit}"
+                     FontSize="17"
+                     Margin="0,0,0,16">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding  Converter={StaticResource EnumDisplayName}}"
+                                   Padding="12,6"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- Wind direction symbol -->
+            <TextBlock Text="Oznaczenie kierunku wiatru"
+                       FontSize="16"
+                       Margin="0,0,0,6"/>
+            <ListBox ItemsSource="{Binding WindDirectionDisplays}"
+                     SelectedItem="{Binding WindDirectionDisplay}"
+                     FontSize="17"
+                     Margin="0,0,0,16">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding  Converter={StaticResource EnumDisplayName}}"
+                                   Padding="12,6"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- Cache interval -->
+            <TextBlock Text="Interwał cache (minuty)"
+                       FontSize="16"
+                       Margin="0,0,0,6"/>
+            <StackPanel Orientation="Horizontal"
+                        Margin="0,0,0,16">
+                <Slider Minimum="10"
+                        Maximum="60"
+                        Value="{Binding CacheIntervalMinutes}"
+                        Width="200"
+                        TickFrequency="5"
+                        IsSnapToTickEnabled="True"
+                        VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding CacheIntervalMinutes, StringFormat='{}{0} min'}"
+                           Margin="12,0,0,0"
+                           FontSize="17"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
