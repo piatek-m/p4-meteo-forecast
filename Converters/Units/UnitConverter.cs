@@ -1,7 +1,7 @@
 using System.Windows;
 using MeteoForecast.Models;
 
-namespace MeteoForecast.Converters;
+namespace MeteoForecast.Converters.Units;
 
 public static class UnitConverter
 {
@@ -39,7 +39,7 @@ public static class UnitConverter
         _ => 12
     };
 
-    private static string Convert(double value, UnitType type, AppSettings settings)
+    public static string Convert(double value, UnitType type, AppSettings settings)
         => type switch
         {
             UnitType.Temperature => ConvertTemperature(value, settings.TemperatureUnit),
